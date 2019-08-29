@@ -1,5 +1,7 @@
 import pygame
- 
+import sys
+import image
+
 # Define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -66,7 +68,30 @@ myBullets = pygame.sprite.Group()
 
 mobBullets = pygame.sprite.Group()
 
+class Charactor(pygame.sprite.Sprite):
+    
+    def __init__(self,width,height):
+        pygame.sprite.Sprite.__init__(self)
 
+        self.image = pygame.image.load("image/5001.png").convert_alpha()
+        self.rect = self.image.get_rect()
+        self.width = width
+        self.height = height
+        self.speed = 5
+        self.x = 960
+        self.y = 540
+        self.x_speed = 0
+        self.y_speed = 0
+        self.active = True
+        
+        
+    def move(self):
+        if self.active == True:
+            self.x = x_charactor
+            self.y = y_charactor
+    
+char = Charactor(size,size)    
+        
 class Bullet_up(pygame.sprite.Sprite):
  
     def __init__(self,x,y):
@@ -244,13 +269,18 @@ while not done:
             
             if event.key == pygame.K_w:
                 y_character_speed = -5
+                char.y_speed = -5
             if event.key == pygame.K_s:
                 y_character_speed = 5
+                char.y_speed = 5
             if event.key == pygame.K_a:
                 x_character_speed = -5
+                char.x_speed = -5
             if event.key == pygame.K_d:
                 x_character_speed = 5
+                char.x_speed = 5
 
+                
         # Used to allow the character to shoot bullets
             if event.key == pygame.K_UP:
                 mybulletup = Bullet_up(x_character + 4, y_character)
@@ -273,17 +303,20 @@ while not done:
                 Bullets.add(mybulletright)
                 myBullets.add(mybulletright)
                 
-        # Used to allow the character stop mocing      
+        # Used to allow the character stop moving      
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_w:
                 y_character_speed = 0
+                char.y_speed = 0
             if event.key == pygame.K_s:
                 y_character_speed = 0
+                char.y_speed = 0
             if event.key == pygame.K_a:
                 x_character_speed = 0
+                char.x_speed = 0
             if event.key == pygame.K_d:
                 x_character_speed = 0
-
+                char.x_speed = 0
 
     # --- Game logic should go here
     # Used to udate the position of the character
@@ -305,6 +338,19 @@ while not done:
         x_character =1910
 
 
+    if char.y < 0:
+        char.y_speed = 0
+        char.y = 0
+    if char.y > 1051:
+        cahr.y_speed = 0
+        char.y = 1051
+    if char.x < 0:
+        char.x_speed = 0
+        char.x = 0
+    if char.x > 1910:
+        char.x_speed = 0
+        char.x =1910
+
 
     # --- Screen-clearing code goes here
     screen.fill(WHITE)
@@ -318,7 +364,7 @@ while not done:
     # --- Drawing code should go here
 
     
-
+    screen.blit(char.image, char.rect)
     draw_character(screen,x_character,y_character)
     #myBullet.update()
     all_sprites_list.update()
