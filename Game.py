@@ -10,8 +10,8 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 x_character = 965
 y_character = 545
-x_character_speed = 0
-y_character_speed = 0
+x_speed = 0
+y_speed = 0
 x_mob = 0
 y_mob = 0
 x_mob_speed = 5
@@ -20,6 +20,10 @@ rect_x = 50
 rect_y = 50
 rect_change_x = 5
 rect_change_y = 5
+x1 = 0
+y1 = 0
+x2 = 100
+y2 = 100
  
 pygame.init()
  
@@ -31,36 +35,6 @@ pygame.display.set_caption("My Game")
 
 
 
-def draw_character (screen,x,y): 
-    # Head
-    pygame.draw.ellipse(screen, BLACK,[x,y,10,10],0)
- 
-    # Legs
-    pygame.draw.line(screen, BLACK, [4+x,17+y], [11+x,27+y], 2)
-    pygame.draw.line(screen, BLACK, [4+x,17+y], [-1+x,27+y], 2)
- 
-    # Body
-    pygame.draw.line(screen, BLUE, [4+x,17+y], [4+x,7+y], 2)
- 
-    # Arms
-    pygame.draw.line(screen, BLUE, [4+x,7+y], [8+x,17+y], 2)
-    pygame.draw.line(screen, BLUE, [4+x,7+y], [x,17+y], 2)
-
-#def draw_mob (screen,x,y): 
-    # Head
-    pygame.draw.ellipse(screen, BLACK,[x,y,10,10],0)
-     
-    # Legs
-    pygame.draw.line(screen, BLACK, [4+x,17+y], [11+x,27+y], 2)
-    pygame.draw.line(screen, BLACK, [4+x,17+y], [-1+x,27+y], 2)
-     
-    # Body
-    pygame.draw.line(screen, RED, [4+x,17+y], [4+x,7+y], 2)
-     
-    # Arms
-    pygame.draw.line(screen, RED, [4+x,7+y], [8+x,17+y], 2)
-    pygame.draw.line(screen, RED, [4+x,7+y], [x,17+y], 2)
-      
 
 Bullets = pygame.sprite.Group()
 
@@ -70,27 +44,21 @@ mobBullets = pygame.sprite.Group()
 
 class Charactor(pygame.sprite.Sprite):
     
-    def __init__(self,width,height):
+    def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
         self.image = pygame.image.load("image/5001.png").convert_alpha()
         self.rect = self.image.get_rect()
-        self.width = width
-        self.height = height
         self.speed = 5
         self.x = 960
         self.y = 540
-        self.x_speed = 0
-        self.y_speed = 0
         self.active = True
         
+    def update(self,y_speed,x_speed):
+        self.rect.y += y_speed
+        self.rect.x += x_speed
         
-    def move(self):
-        if self.active == True:
-            self.x = x_charactor
-            self.y = y_charactor
-    
-char = Charactor(size,size)    
+char = Charactor()    
         
 class Bullet_up(pygame.sprite.Sprite):
  
@@ -164,83 +132,77 @@ class Bullet_right(pygame.sprite.Sprite):
      
     def update(self):
         """ Automatically called when we need to move the block. """
-        self.rect.x += 10
-
-    def delete(self):
-        if self.x >= 1920:
-            self.active = False        
+        if self.rect.x > 1000:
+            self.kill()
+            
 class Mob1(pygame.sprite.Sprite):
-    def __init__(self,x,y,width,height):
+    def __init__(self,x,y,):
         pygame.sprite.Sprite.__init__(self)
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
         self.xspeed = 2
         self.yspeed = 2
-        self.active = True
         self.health = 3
         
 #this is the method for the enermy to be able to move towards the character
-    def move(self):
-        self.move()
-        if x_character - self.x > 0:
-            self.x += self.xspeed
-        if x_character - self.x < 0:
-            self.x -= self.xspeed
-        if y_character - self.y > 0:
-            self.y += self.yspeed
-        if y_character - self.y < 0:
-            self.y -= self.yspeed
-        if self.x == x_character:
-            self.xspeed = 0
-        if self.y == y_character:
-            self.yspeed = 0
-        
-    def die(self):
-        if self.health == 0:
-            self.active = false
+    def update(self,x_charactor, y_charactor):
+        if self.health > 0:
+            if x_character - self.x > 0:
+                self.x += self.xspeed
+            if x_character - self.x < 0:
+                self.x -= self.xspeed
+            if y_character - self.y > 0:
+                self.y += self.yspeed
+            if y_character - self.y < 0:
+                self.y -= self.yspeed
+            if self.x == x_character:
+                self.xspeed = 0
+            if self.y == y_character:
+                self.yspeed = 0
+        if self.health <= 0:
+            self.kill()
 
             
 class Mob2(pygame.sprite.Sprite):
-    def __init__(self,x,y,width,height):
+    def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
         self.xspeed = 2
         self.yspeed = 2
-        self.active = True
-        timeCount = 0
+        self.timeCount = 0
+        self.health = 2
         
-    def move(self):
-        self.move()
-        if x_character - self.x > 200:
-            self.x += self.xspeed
-        if x_character - self.x < 200:
-            self.x -= self.xspeed
-        if y_character - self.y > 200:
-            self.y += self.yspeed
-        if y_character - self.y < 200:
-            self.y -= self.yspeed
+    def update(self,x_charactor, y_charactor):
+        
+        if self.health > 0:   
+            if x_character - self.x > 200:
+                self.x += self.xspeed
+            if x_character - self.x < 200:
+                self.x -= self.xspeed
+            if y_character - self.y > 200:
+                self.y += self.yspeed
+            if y_character - self.y < 200:
+                self.y -= self.yspeed       
+            if self.timeCount == 30:
+                self.timeCount = 0
+                if x_character - self.x > 0:
+                    mobbulletright = Bullet_right(self.x,self.y)
+                if x_character - self.x > 0:
+                    mobbulletleft = Bullet_left(self.x,self.y)
+                if y_character - self.y > 0:
+                    mobbulletup = Bullet_up(self.x,self.y)
+                if y_character - self.x < 0:
+                    mobbulletdown = Bullet_down(self.x,self.y)
+            else:
+                self.timeCount = self.timeCount + 1
+                
+        if self.health <= 0:
+            self.kill()
+                      
 
-    def attack(self):
-        if timeCount == 30:
-            if x_character - self.x > 0:
-                mobbulletright = Bullet_right(self.x,self.y)
-            if x_character - self.x > 0:
-                mobbulletleft = Bullet_left(self.x,self.y)
-            if y_character - self.y > 0:
-                mobbulletup = Bullet_up(self.x,self.y)
-            if y_character - self.x < 0:
-                mobbulletdown = Bullet_down(self.x,self.y)
-        else:
-            self.timeCount = self.timeCount + 1
-
-
-mob1 = Mob1(size,size,size,size)
-mob2 = Mob2(size,size,size,size)
+mob1 = Mob1(x1,y1)
+mob2 = Mob2(x2,y2)
 #here we can add mobs into groups
 Mobs = pygame.sprite.Group()
 Mobs.add(mob1,mob2)
@@ -266,62 +228,47 @@ while not done:
             
         # Used to move the character 
         if event.type == pygame.KEYDOWN:
-            
             if event.key == pygame.K_w:
-                y_character_speed = -5
-                char.y_speed = -5
+                y_speed = -5
             if event.key == pygame.K_s:
-                y_character_speed = 5
-                char.y_speed = 5
+                y_speed = 5
             if event.key == pygame.K_a:
-                x_character_speed = -5
-                char.x_speed = -5
+                x_speed = -5
             if event.key == pygame.K_d:
-                x_character_speed = 5
-                char.x_speed = 5
-
+                x_speed = 5
                 
         # Used to allow the character to shoot bullets
             if event.key == pygame.K_UP:
-                mybulletup = Bullet_up(x_character + 4, y_character)
-                all_sprites_list.add(mybulletup)
+                mybulletup = Bullet_up(char.rect.x + 40, char.rect.y)
                 Bullets.add(mybulletup)
                 myBullets.add(mybulletup)
             if event.key == pygame.K_DOWN:
-                mybulletdown = Bullet_down(x_character + 4, y_character)
-                all_sprites_list.add(mybulletdown)
+                mybulletdown = Bullet_down(char.rect.x + 40, char.rect.y)
                 Bullets.add(mybulletdown)
                 myBullets.add(mybulletdown)
             if event.key == pygame.K_LEFT:
-                mybulletleft = Bullet_left(x_character + 4, y_character)
-                all_sprites_list.add(mybulletleft)
+                mybulletleft = Bullet_left(char.rect.x + 40, char.rect.y)
                 Bullets.add(mybulletleft)
                 myBullets.add(mybulletleft)
             if event.key == pygame.K_RIGHT:
-                mybulletright = Bullet_right(x_character + 4, y_character)
-                all_sprites_list.add(mybulletright)
+                mybulletright = Bullet_right(char.rect.x + 40, char.rect.y)
                 Bullets.add(mybulletright)
                 myBullets.add(mybulletright)
                 
         # Used to allow the character stop moving      
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_w:
-                y_character_speed = 0
-                char.y_speed = 0
+                y_speed = 0
             if event.key == pygame.K_s:
-                y_character_speed = 0
-                char.y_speed = 0
+                y_speed = 0
             if event.key == pygame.K_a:
-                x_character_speed = 0
-                char.x_speed = 0
+                x_speed = 0
             if event.key == pygame.K_d:
-                x_character_speed = 0
-                char.x_speed = 0
+                x_speed = 0
 
     # --- Game logic should go here
     # Used to udate the position of the character
-    x_character += x_character_speed
-    y_character += y_character_speed
+    char.update(y_speed, x_speed)
 
     # Used to stop the character when hit the boundry of the windows
     if y_character < 0:
@@ -362,12 +309,10 @@ while not done:
     # background image.
  
     # --- Drawing code should go here
-
-    
-    screen.blit(char.image, char.rect)
-    draw_character(screen,x_character,y_character)
-    #myBullet.update()
-    all_sprites_list.update()
+    Mobs.update(x_character,y_character)
+    Bullets.update()
+    all_sprites_list.add(char)
+    all_sprites_list.add(Bullets)
     all_sprites_list.draw(screen)
     
     # --- Go ahead and update the screen with what we've drawn.
