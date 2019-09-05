@@ -1,3 +1,4 @@
+
 import pygame
 import sys
 import image
@@ -45,6 +46,8 @@ class Character(pygame.sprite.Sprite):
     def update(self,y_speed,x_speed):
         self.rect.y += y_speed
         self.rect.x += x_speed
+        self.xspeed = x_speed
+        self.yspeed = y_speed
         
 char = Character(500,500)
 
@@ -54,7 +57,7 @@ class Wall(pygame.sprite.Sprite):
     def __init__(self,x,y):
         
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("image/wall.png").convert_alpha()
+        self.image = pygame.image.load("image/wall.png")
         self.rect = self.image.get_rect()
         self.rect.x = x*50
         self.rect.y = y*50
@@ -137,18 +140,25 @@ class Mob1(pygame.sprite.Sprite):
         self.xspeed = 2
         self.yspeed = 2
         self.health = 3
+        self.xdirection = ''
+        self.ydirection = ''
+
         
 #this is the method for the enermy to be able to move towards the character
     def update(self,x_character, y_character):
         if self.health > 0:
             if x_character - self.rect.x > 0:
                 self.rect.x += self.xspeed
+                self.xdirection = "right"
             if x_character - self.rect.x < 0:
                 self.rect.x -= self.xspeed
+                self.xdirection = "left"
             if y_character - self.rect.y > 0:
                 self.rect.y += self.yspeed
+                self.ydirection = "down"
             if y_character - self.rect.y < 0:
                 self.rect.y -= self.yspeed
+                self.ydirection = "up"
         if self.health <= 0:
             self.kill()
 
@@ -164,27 +174,36 @@ class Mob2(pygame.sprite.Sprite):
         self.yspeed = 2
         self.timeCount = 0
         self.health = 2
-        
+        self.xdirection = ''
+        self.ydirection = ''
     def update(self,x_character, y_character):
         
         if self.health > 0:   
             if  x_character - self.rect.x > 200:
                 self.rect.x += self.xspeed
+                self.xdirection = "right"
             if x_character - self.rect.x < -200:
                 self.rect.x -= self.xspeed
+                self.xdirection = "left"
             if y_character - self.rect.y > 200:
                 self.rect.y += self.yspeed
+                self.ydirection = "down"
             if y_character - self.rect.y < -200:
+                self.ydirection = "up"
                 self.rect.y -= self.yspeed
             if  x_character - self.rect.x > 0 and x_character - self.rect.x < 200:
                 self.rect.x -= self.xspeed
+                self.xdirection = "left"
             if x_character - self.rect.x < 0 and x_character - self.rect.x > -200:
                 self.rect.x += self.xspeed
+                self.xdirection = "right"
             if  y_character - self.rect.y > 0 and y_character - self.rect.y < 200:
                 self.rect.y -= self.yspeed
+                self.ydirection = "up"
             if y_character - self.rect.y < 0 and y_character - self.rect.y > -200:
                 self.rect.y += self.yspeed
-            
+                self.ydirection = "down"
+                
             if self.timeCount == 30:
                 self.timeCount = 0
                 if x_character - self.rect.x > 0:
@@ -206,12 +225,11 @@ mob1 = Mob1(50,50)
 mob2 = Mob2(1000,1000)
 #here we can add mobs into groups
 Mobs = pygame.sprite.Group()
-Mobs.add(mob1,mob2)
-
 Mob1 = pygame.sprite.Group()
 Mob1.add(mob1)
 Mob2 = pygame.sprite.Group()
 Mob2.add(mob2)
+Mobs.add(Mob1,Mob2)
 Walls = pygame.sprite.Group()
 Bullets = pygame.sprite.Group()
 myBullets = pygame.sprite.Group()
@@ -267,6 +285,7 @@ while not done:
                 y_speed = 0
             if event.key == pygame.K_a:
                 x_speed = 0
+
             if event.key == pygame.K_d:
                 x_speed = 0
 
@@ -274,18 +293,18 @@ while not done:
     # Used to stop the character when hit the boundry of the windows
 
 
-    if char.rect.y < 0:
-        char.y_speed = 0
-        char.rect.y = 0
-    if char.rect.y > 800:
-        cahr.y_speed = 0
-        char.rect.y = 800
-    if char.rect.x < 0:
-        char.x_speed = 0
-        char.rect.x = 0
-    if char.rect.x > 1200:
-        char.x_speed = 0
-        char.rect.x =1200
+    if char.rect.y < 50:
+        y_speed = 0
+        char.rect.y = 50
+    if char.rect.y > 700:
+        y_speed = 0
+        char.rect.y = 700
+    if char.rect.x < 50:
+        x_speed = 0
+        char.rect.x = 50
+    if char.rect.x > 1100:
+        x_speed = 0
+        char.rect.x =1100
 
     if level_1 == True:
         level_1 = False
@@ -297,6 +316,34 @@ while not done:
                     if  a[X] == "w":
                         myWall = Wall(X,Y)
                         Walls.add(myWall)
+                        
+    pygame.sprite.groupcollide(Bullets, Walls, True ,False)
+
+    
+    if pygame.sprite.groupcollide(Walls,Mobs, False ,False):
+        Mob_list = pygame.sprite.groupcollide(Walls,Mobs, False ,False)
+        Mob_Wall = Mob_list.values()
+        print(Mob_Wall)
+        for c in range(0,len(Mob_Wall)-1):
+            if Mob_Wall[c].xdirection == "left":
+                Mob_Wall[c].rect.x + Mob_Wall[c].xspeed
+            elif Mob_Wall[c].xdirection == "right":
+                Mob_Wall[c].rect.x - Mob_Wall[c].xspeed
+            if Mob_Wall[c].ydirection == "up":
+                Mob_Wall[c].rect.y + Mob_Wall[c].yspeed
+            elif Mob_Wall[c].ydirection == "down":
+                Mob_Wall[c].rect.y - Mob_Wall[c].yspeed
+
+    if pygame.sprite.spritecollideany(char, Walls ,False):
+        if char.xspeed > 0 :
+            char.rect.x = char.rect.x - 5
+        elif char.xspeed < 0 :
+            char.rect.x = char.rect.x + 5
+        if char.yspeed > 0 :
+            char.rect.y = char.rect.y - 5
+        elif char.yspeed < 0 :
+            char.rect.y = char.rect.y + 5        
+    
         
 
 
