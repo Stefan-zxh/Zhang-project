@@ -21,8 +21,8 @@ rect_change_x = 5
 rect_change_y = 5
 x1 = 0
 y1 = 0
-x2 = 1000
-y2 = 1000
+x2 = 200
+y2 = 200
 level_1 = True
 
 pygame.init()
@@ -66,16 +66,13 @@ class Bullet_up(pygame.sprite.Sprite):
  
     def __init__(self,x,y):
         super().__init__()
-        self.image = pygame.Surface([5,10])
-        self.image.fill(BLACK)
+        self.image = pygame.image.load("image/tear.png").convert_alpha()
         self.rect = self.image.get_rect()
-        self.rect.x=x
-        self.rect.y=y
+        self.rect.x = x
+        self.rect.y = y
         
     def update(self):
         self.rect.y -= 10
-        if self.rect.y < 0:
-            self.kill()
 
 class Bullet_down(pygame.sprite.Sprite):
     """ This class represents a simple block the player collects. """
@@ -83,17 +80,14 @@ class Bullet_down(pygame.sprite.Sprite):
     def __init__(self,x,y):
         """ Constructor, create the image of the block. """
         super().__init__()
-        self.image = pygame.Surface([5,10])
-        self.image.fill(BLACK)
+        self.image = pygame.image.load("image/tear.png").convert_alpha()
         self.rect = self.image.get_rect()
-        self.rect.x=x
-        self.rect.y=y
+        self.rect.x = x
+        self.rect.y = y
  
     def update(self):
         """ Automatically called when we need to move the block. """
         self.rect.y += 10
-        if self.rect.y > 1080:
-            self.kill()
 
 class Bullet_left(pygame.sprite.Sprite):
     """ This class represents a simple block the player collects. """
@@ -101,34 +95,30 @@ class Bullet_left(pygame.sprite.Sprite):
     def __init__(self,x,y):
         """ Constructor, create the image of the block. """
         super().__init__()
-        self.image = pygame.Surface([10,5])
-        self.image.fill(BLACK)
+        self.image = pygame.image.load("image/tear.png").convert_alpha()
         self.rect = self.image.get_rect()
-        self.rect.x=x
-        self.rect.y=y
+        self.rect.x = x
+        self.rect.y = y
  
     def update(self):
         """ Automatically called when we need to move the block. """
         self.rect.x -= 10
-        if self.rect.x < 0:
-            self.kill()       
+      
 class Bullet_right(pygame.sprite.Sprite):
     """ This class represents a simple block the player collects. """
  
     def __init__(self,x,y):
         """ Constructor, create the image of the block. """
         super().__init__()
-        self.image = pygame.Surface([10,5])
-        self.image.fill(BLACK)
+        self.image = pygame.image.load("image/tear.png").convert_alpha()
         self.rect = self.image.get_rect()
-        self.rect.x=x
-        self.rect.y=y
+        self.rect.x = x
+        self.rect.y = y
+        
      
     def update(self):
         """ Automatically called when we need to move the block. """
         self.rect.x += 10
-        if self.rect.x > 1920:
-            self.kill()
             
 class Mob1(pygame.sprite.Sprite):
     def __init__(self,x,y,):
@@ -222,7 +212,7 @@ class Mob2(pygame.sprite.Sprite):
                       
 
 mob1 = Mob1(50,50)
-mob2 = Mob2(1000,1000)
+mob2 = Mob2(200,200)
 #here we can add mobs into groups
 Mobs = pygame.sprite.Group()
 Mob1 = pygame.sprite.Group()
@@ -274,6 +264,7 @@ while not done:
                 myBullets.add(mybulletleft)
             if event.key == pygame.K_RIGHT:
                 mybulletright = Bullet_right(char.rect.x + 40, char.rect.y)
+                
                 Bullets.add(mybulletright)
                 myBullets.add(mybulletright)
                 
@@ -283,6 +274,7 @@ while not done:
                 y_speed = 0
             if event.key == pygame.K_s:
                 y_speed = 0
+
             if event.key == pygame.K_a:
                 x_speed = 0
 
@@ -293,25 +285,11 @@ while not done:
     # Used to stop the character when hit the boundry of the windows
 
 
-    if char.rect.y < 50:
-        y_speed = 0
-        char.rect.y = 50
-    if char.rect.y > 700:
-        y_speed = 0
-        char.rect.y = 700
-    if char.rect.x < 50:
-        x_speed = 0
-        char.rect.x = 50
-    if char.rect.x > 1100:
-        x_speed = 0
-        char.rect.x =1100
-
     if level_1 == True:
         level_1 = False
         with open("Level.txt","r") as f:
             for Y in range (0,16):
                 a = f.readline()
-                
                 for X in range (0,24):
                     if  a[X] == "w":
                         myWall = Wall(X,Y)
@@ -319,21 +297,29 @@ while not done:
                         
     pygame.sprite.groupcollide(Bullets, Walls, True ,False)
 
-    
-    if pygame.sprite.groupcollide(Walls,Mobs, False ,False):
-        Mob_list = pygame.sprite.groupcollide(Walls,Mobs, False ,False)
-        Mob_Wall = Mob_list.values()
-        print(Mob_Wall)
-        for c in range(0,len(Mob_Wall)-1):
-            if Mob_Wall[c].xdirection == "left":
-                Mob_Wall[c].rect.x + Mob_Wall[c].xspeed
-            elif Mob_Wall[c].xdirection == "right":
-                Mob_Wall[c].rect.x - Mob_Wall[c].xspeed
-            if Mob_Wall[c].ydirection == "up":
-                Mob_Wall[c].rect.y + Mob_Wall[c].yspeed
-            elif Mob_Wall[c].ydirection == "down":
-                Mob_Wall[c].rect.y - Mob_Wall[c].yspeed
+    for w in Walls:
+        Mob_Wall = pygame.sprite.spritecollide(w,Mobs, False ,False)
+        if Mob_Wall:
+            for c in Mob_Wall:
+                if c in Mobs:
+                    if c.xdirection == "left":
+                        c.rect.x = c.rect.x + 2
+                    elif c.xdirection == "right":
+                        c.rect.x = c.rect.x - 2
+                    if c.ydirection == "up":
+                        c.rect.y = c.rect.y + 2
+                    elif c.ydirection == "down":
+                        c.rect.y = c.rect.y - 2
+                        
+    for t in myBullets:
+        Mob_hit = pygame.sprite.spritecollide(t,Mobs, True ,False)
+        if Mob_hit:
+            for m in Mob_hit:
+                if m in Mobs:
+                    m.health = m.health -1
+                    
 
+    
     if pygame.sprite.spritecollideany(char, Walls ,False):
         if char.xspeed > 0 :
             char.rect.x = char.rect.x - 5
