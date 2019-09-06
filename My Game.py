@@ -32,6 +32,8 @@ size = (1200,800)
 screen = pygame.display.set_mode(size)
  
 pygame.display.set_caption("My Game")
+all_sprites_list = pygame.sprite.Group()
+
 
 
 class Character(pygame.sprite.Sprite):
@@ -61,7 +63,21 @@ class Wall(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x*50
         self.rect.y = y*50
-        
+
+Walls = pygame.sprite.Group()
+if level_1 == True:
+    level_1 = False
+    with open("Level.txt","r") as f:
+        for Y in range (0,16):
+            a = f.readline()
+            for X in range (0,24):
+                if  a[X] == "w":
+                    myWall = Wall(X,Y)
+                    Walls.add(myWall)
+                    
+all_sprites_list.add(Walls)
+
+
 class Bullet_up(pygame.sprite.Sprite):
  
     def __init__(self,x,y):
@@ -198,12 +214,16 @@ class Mob2(pygame.sprite.Sprite):
                 self.timeCount = 0
                 if x_character - self.rect.x > 0:
                     mobbulletright = Bullet_right(self.rect.x,self.rect.y)
-                if x_character - self.rect.x > 0:
+                    mobBullets.add(mobbulletright)
+                if x_character - self.rect.x < 0:
                     mobbulletleft = Bullet_left(self.rect.x,self.rect.y)
+                    mobBullets.add(mobbulletleft)
                 if y_character - self.rect.y > 0:
-                    mobbulletup = Bullet_up(self.rect.x,self.rect.y)
-                if y_character - self.rect.x < 0:
                     mobbulletdown = Bullet_down(self.rect.x,self.rect.y)
+                    mobBullets.add(mobbulletdown)
+                if y_character - self.rect.y < 0:
+                    mobbulletup = Bullet_up(self.rect.x,self.rect.y)
+                    mobBullets.add(mobbulletup)
             else:
                 self.timeCount = self.timeCount + 1
                 
@@ -220,7 +240,6 @@ Mob1.add(mob1)
 Mob2 = pygame.sprite.Group()
 Mob2.add(mob2)
 Mobs.add(Mob1,Mob2)
-Walls = pygame.sprite.Group()
 Bullets = pygame.sprite.Group()
 myBullets = pygame.sprite.Group()
 mobBullets = pygame.sprite.Group()
@@ -285,15 +304,6 @@ while not done:
     # Used to stop the character when hit the boundry of the windows
 
 
-    if level_1 == True:
-        level_1 = False
-        with open("Level.txt","r") as f:
-            for Y in range (0,16):
-                a = f.readline()
-                for X in range (0,24):
-                    if  a[X] == "w":
-                        myWall = Wall(X,Y)
-                        Walls.add(myWall)
                         
     pygame.sprite.groupcollide(Bullets, Walls, True ,False)
 
@@ -317,7 +327,7 @@ while not done:
             for m in Mob_hit:
                 if m in Mobs:
                     m.health = m.health -1
-                    
+
 
     
     if pygame.sprite.spritecollideany(char, Walls ,False):
@@ -346,8 +356,8 @@ while not done:
     char.update(y_speed, x_speed)
     Mobs.update(char.rect.x, char.rect.y)
     Bullets.update()
+    mobBullets.update()
     Mobs.draw(screen)
-    all_sprites_list.add(Walls)
     all_sprites_list.add(char)
     all_sprites_list.add(Bullets)
     all_sprites_list.draw(screen)
