@@ -59,7 +59,7 @@ class Wall(pygame.sprite.Sprite):
     def __init__(self,x,y):
         
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("image/wall.png")
+        self.image = pygame.image.load("image/wall.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = x*50
         self.rect.y = y*50
@@ -75,7 +75,8 @@ if level_1 == True:
                     myWall = Wall(X,Y)
                     Walls.add(myWall)
                     
-all_sprites_list.add(Walls)
+                    all_sprites_list.add(myWall)
+                    print("wall made")
 
 
 class Bullet_up(pygame.sprite.Sprite):
@@ -243,7 +244,7 @@ Mobs.add(Mob1,Mob2)
 Bullets = pygame.sprite.Group()
 myBullets = pygame.sprite.Group()
 mobBullets = pygame.sprite.Group()
-all_sprites_list = pygame.sprite.Group()
+
 
 
 # Loop until the user clicks the close button.
