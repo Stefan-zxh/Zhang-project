@@ -24,6 +24,10 @@ y1 = 0
 x2 = 200
 y2 = 200
 level_1 = True
+level_2 = False
+level_3 = False
+level = 1
+
 gameover = False
 
 pygame.init()
@@ -70,20 +74,9 @@ class Wall(pygame.sprite.Sprite):
         self.rect.y = y*50
 
 Walls = pygame.sprite.Group()
-if level_1 == True:
-    level_1 = False
-    with open("Level.txt","r") as f:
-        for Y in range (0,16):
-            a = f.readline()
-            for X in range (0,24):
-                if  a[X] == "w":
-                    myWall = Wall(X,Y)
-                    Walls.add(myWall)
-                    
-                    all_sprites_list.add(myWall)
-                    
 
 
+    
 class Bullet_up(pygame.sprite.Sprite):
  
     def __init__(self,x,y):
@@ -142,7 +135,7 @@ class Bullet_right(pygame.sprite.Sprite):
         """ Automatically called when we need to move the block. """
         self.rect.x += 10
             
-class Mob1(pygame.sprite.Sprite):
+class Mob1s(pygame.sprite.Sprite):
     def __init__(self,x,y,):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load("image/031.00.00.png").convert_alpha()
@@ -176,7 +169,7 @@ class Mob1(pygame.sprite.Sprite):
 
 
             
-class Mob2(pygame.sprite.Sprite):
+class Mob2s(pygame.sprite.Sprite):
     def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load("image/010.01.00.png").convert_alpha()
@@ -242,19 +235,21 @@ class Mob2(pygame.sprite.Sprite):
             self.kill()
                       
 
-mob1 = Mob1(50,50)
-mob2 = Mob2(200,200)
 #here we can add mobs into groups
 Mobs = pygame.sprite.Group()
 Mob1 = pygame.sprite.Group()
-Mob1.add(mob1)
 Mob2 = pygame.sprite.Group()
-Mob2.add(mob2)
-Mobs.add(Mob1,Mob2)
 Bullets = pygame.sprite.Group()
 myBullets = pygame.sprite.Group()
 mobBullets = pygame.sprite.Group()
+
+
+
 all_sprites_list.add(char)
+
+
+    
+    
 
 
 # Loop until the user clicks the close button.
@@ -273,6 +268,65 @@ while not done:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
+
+            if level_1 == True:
+                level_1 = False
+                level = level + 1
+                mob1 = Mob1s(50,50)
+                mob2 = Mob2s(200,200)
+                Mob1.add(mob1)
+                Mob2.add(mob2)
+                Mobs.add(Mob1,Mob2)
+                with open("Level1.txt","r") as f:
+                    for Y in range (0,16):
+                        a = f.readline()
+                        for X in range (0,24):
+                            if  a[X] == "w":
+                                myWall = Wall(X,Y)
+                                Walls.add(myWall)
+                                all_sprites_list.add(myWall)
+                                
+            if len(Mobs) == 0 and level == 2:          
+                level_2 == True
+            if level_2 == True :
+                level_2 == False
+                level = level + 1
+                mob1 = Mob1s(50,50)
+                mob2 = Mob2s(200,200)
+                Mob1.add(mob1)
+                Mob2.add(mob2)
+                Mobs.add(Mob1,Mob2)
+                with open("Level2.txt","r") as f:
+                    for Y in range (0,16):
+                        a = f.readline()
+                        for X in range (0,24):
+                            if  a[X] == "w":
+                                myWall = Wall(X,Y)
+                                Walls.add(myWall)
+                                all_sprites_list.add(myWall)
+            
+
+            if len(Mobs) == 0 and level == 3:          
+                level_3 == True
+            if level_3 == True :
+                level_3 == False
+                level = level + 1
+                mob1 = Mob1s(50,50)
+                mob2 = Mob2s(200,200)
+                Mob1.add(mob1)
+                Mob2.add(mob2)
+                Mobs.add(Mob1,Mob2)
+                with open("Level3.txt","r") as f:
+                    for Y in range (0,16):
+                        a = f.readline()
+                        for X in range (0,24):
+                            if  a[X] == "w":
+                                myWall = Wall(X,Y)
+                                Walls.add(myWall)
+                                all_sprites_list.add(myWall)
+
+
+                
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w:
                     y_speed = -5
@@ -362,6 +416,7 @@ while not done:
             
         if pygame.sprite.spritecollide(char, mobBullets, True):
             char.health = char.health -1
+
 
         # --- Screen-clearing code goes here
         screen.fill(WHITE)
