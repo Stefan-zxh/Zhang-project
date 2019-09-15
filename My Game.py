@@ -1,6 +1,5 @@
 
 import pygame
-import sys
 import image
 
 # Define some colors
@@ -27,18 +26,19 @@ level_1 = True
 level_2 = False
 level_3 = False
 level = 1
-
 gameover = False
 
+
 pygame.init()
- 
+
+
+
+
+
 # Set the width and height of the screen [width, height]
-size = (1200,800)
-screen = pygame.display.set_mode(size)
- 
+screen = pygame.display.set_mode((1200,800))
 pygame.display.set_caption("My Game")
 all_sprites_list = pygame.sprite.Group()
-
 
 
 class Character(pygame.sprite.Sprite):
@@ -58,8 +58,9 @@ class Character(pygame.sprite.Sprite):
         self.yspeed = y_speed
         if self.health <= 0:
             self.kill()
-
-        
+    def draw(self,win):
+        pygame.draw.rect(win, RED, (self.rect.x, self.rect.y - 20, 50, 10))
+        pygame.draw.rect(win, GREEN , (self.rect.x, self.rect.y - 20, 50 - (5 * (10 - self.health)), 10))
 char = Character(500,500)
 
 
@@ -246,12 +247,11 @@ mobBullets = pygame.sprite.Group()
 
 
 all_sprites_list.add(char)
-
+font = pygame.font.SysFont("comicsansms", 72)
+text = font.render("Game Over!", True, BLUE)
+health = char.health
 
     
-    
-
-
 # Loop until the user clicks the close button.
 done = False
 # Used to manage how fast the screen updates
@@ -264,11 +264,12 @@ while not done:
             if event.type == pygame.QUIT:
                 done = True
         screen.fill(RED)
+        screen.blit(text,(600 - text.get_width() // 2, 400 - text.get_height() // 2))
     elif gameover == False:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
-
+        
             if level_1 == True:
                 level_1 = False
                 level = level + 1
@@ -433,7 +434,8 @@ while not done:
         Bullets.update()
         Mobs.draw(screen)
         all_sprites_list.add(Bullets)
-        all_sprites_list.draw(screen)  
+        all_sprites_list.draw(screen)
+        char.draw(screen)
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
 
