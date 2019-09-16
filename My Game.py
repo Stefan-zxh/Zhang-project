@@ -257,6 +257,7 @@ done = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 # -------- Main Program Loop -----------
+
 while not done:
     # --- Main event loop
     if gameover == True:
@@ -287,10 +288,14 @@ while not done:
                                 Walls.add(myWall)
                                 all_sprites_list.add(myWall)
                                 
-            if len(Mobs) == 0 and level == 2:          
-                level_2 == True
-            if level_2 == True :
-                level_2 == False
+            if len(Mobs) == 0 and level == 2:
+                for w in Walls:
+                    w.kill()
+                level_2 = True
+
+                
+            if level_2 == True:
+                level_2 = False
                 level = level + 1
                 mob1 = Mob1s(50,50)
                 mob2 = Mob2s(200,200)
@@ -307,10 +312,12 @@ while not done:
                                 all_sprites_list.add(myWall)
             
 
-            if len(Mobs) == 0 and level == 3:          
-                level_3 == True
+            if len(Mobs) == 0 and level == 3:
+                for w in Walls:
+                    w.kill()
+                level_3 = True
             if level_3 == True :
-                level_3 == False
+                level_3 = False
                 level = level + 1
                 mob1 = Mob1s(50,50)
                 mob2 = Mob2s(200,200)
@@ -392,12 +399,10 @@ while not done:
                         elif c.ydirection == "down":
                             c.rect.y = c.rect.y - 2
                             
-        for t in myBullets:
-            Mob_hit = pygame.sprite.spritecollide(t,Mobs, True ,False)
+        for m in Mobs:
+            Mob_hit = pygame.sprite.spritecollide(m,myBullets, True , False)
             if Mob_hit:
-                for m in Mob_hit:
-                    if m in Mobs:
-                        m.health = m.health -1
+                m.health = m.health - 1
                         
         if char.health <= 0:
             gameover = True
