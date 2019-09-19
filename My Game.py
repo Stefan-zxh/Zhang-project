@@ -32,6 +32,8 @@ gameover = False
 pygame.init()
 
 
+listofwalls=[[]]
+
 
 
 
@@ -273,24 +275,36 @@ while not done:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
-        
+                
+            
+            
             if level_1 == True:
                 level_1 = False
                 level = level + 1
                 mob1 = Mob1s(50,50)
-
                 mob2 = Mob2s(200,200)
                 Mob1.add(mob1)
                 Mob2.add(mob2)
                 Mobs.add(Mob1,Mob2)
+
+                master=[]
                 with open("Level1.txt","r") as f:
                     for Y in range (0,16):
                         a = f.readline()
+                        mylist=[]
+                        
                         for X in range (0,24):
+                            mylist.append(a[X])
+                            
                             if  a[X] == "w":
                                 myWall = Wall(X,Y)
                                 Walls.add(myWall)
+
+                                
                                 all_sprites_list.add(myWall)
+                        master.append(mylist)
+
+                print(master)
                                 
             if len(Mobs) == 0 and level == 1:
                 for w in Walls:
@@ -345,15 +359,22 @@ while not done:
                                 myWall = Wall(X,Y)
                                 Walls.add(myWall)
                                 all_sprites_list.add(myWall)
+
+
+
+            xposition = char.rect.x // 50 + 1
+            yposition = char.rect.y // 50 + 1
+            print(xposition , yposition, char.rect.x , char.rect.y)
+            print(master[yposition][xposition-1])
                                 
 
                 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w:
                     y_speed = -5
-                if event.key == pygame.K_s:
+                if event.key == pygame.K_s and (master[yposition][xposition-1]) != "w":
                     y_speed = 5
-                if event.key == pygame.K_a:
+                if event.key == pygame.K_a and (master[yposition][xposition-1]) != "w":
                     x_speed = -5
                 if event.key == pygame.K_d:
                     x_speed = 5
@@ -395,8 +416,7 @@ while not done:
 
         xposition = char.rect.x // 50 + 1
         yposition = char.rect.y // 50 + 1
-        position = (xposition , yposition)
-        print(position)
+        #print(master[yposition][xposition-1])
                    
         pygame.sprite.groupcollide(Bullets, Walls, True ,False)
 
