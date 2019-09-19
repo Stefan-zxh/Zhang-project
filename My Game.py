@@ -25,7 +25,7 @@ y2 = 200
 level_1 = True
 level_2 = False
 level_3 = False
-level = 1
+level = 0
 gameover = False
 
 
@@ -61,9 +61,12 @@ class Character(pygame.sprite.Sprite):
     def draw(self,win):
         pygame.draw.rect(win, RED, (self.rect.x, self.rect.y - 20, 50, 10))
         pygame.draw.rect(win, GREEN , (self.rect.x, self.rect.y - 20, 50 - (5 * (10 - self.health)), 10))
+        
 char = Character(500,500)
 
+all_sprites_list.add(char)
 
+        
 class Wall(pygame.sprite.Sprite):
 
     def __init__(self,x,y):
@@ -275,6 +278,7 @@ while not done:
                 level_1 = False
                 level = level + 1
                 mob1 = Mob1s(50,50)
+
                 mob2 = Mob2s(200,200)
                 Mob1.add(mob1)
                 Mob2.add(mob2)
@@ -288,9 +292,13 @@ while not done:
                                 Walls.add(myWall)
                                 all_sprites_list.add(myWall)
                                 
-            if len(Mobs) == 0 and level == 2:
+            if len(Mobs) == 0 and level == 1:
                 for w in Walls:
                     w.kill()
+                char.kill()
+                char = Character(500,500)
+                all_sprites_list.add(char)
+                char.health = health
                 level_2 = True
 
                 
@@ -312,10 +320,15 @@ while not done:
                                 all_sprites_list.add(myWall)
             
 
-            if len(Mobs) == 0 and level == 3:
+            if len(Mobs) == 0 and level == 2:
                 for w in Walls:
                     w.kill()
+                char.kill()
+                char = Character(500,500)
+                all_sprites_list.add(char)
+                char.health = health
                 level_3 = True
+                
             if level_3 == True :
                 level_3 = False
                 level = level + 1
@@ -332,7 +345,7 @@ while not done:
                                 myWall = Wall(X,Y)
                                 Walls.add(myWall)
                                 all_sprites_list.add(myWall)
-
+                                
 
                 
             if event.type == pygame.KEYDOWN:
@@ -380,7 +393,10 @@ while not done:
         # --- Game logic should go here
         # Used to stop the character when hit the boundry of the windows
 
-
+        xposition = char.rect.x // 50 + 1
+        yposition = char.rect.y // 50 + 1
+        position = (xposition , yposition)
+        print(position)
                    
         pygame.sprite.groupcollide(Bullets, Walls, True ,False)
 
@@ -434,6 +450,7 @@ while not done:
         # background image.
      
         # --- Drawing code should go here
+        health = char.health
         char.update(y_speed, x_speed)
         Mobs.update(char.rect.x, char.rect.y)
         Bullets.update()
