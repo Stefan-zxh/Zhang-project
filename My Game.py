@@ -38,6 +38,7 @@ listofwalls=[[]]
 
 
 # Set the width and height of the screen [width, height]
+
 screen = pygame.display.set_mode((1200,800))
 pygame.display.set_caption("My Game")
 all_sprites_list = pygame.sprite.Group()
@@ -362,21 +363,21 @@ while not done:
 
 
 
-            xposition = char.rect.x // 50 + 1
-            yposition = char.rect.y // 50 + 1
-            print(xposition , yposition, char.rect.x , char.rect.y)
-            print(master[yposition][xposition-1])
+            xposition = char.rect.x // 50
+            yposition = char.rect.y // 50
+            #print(xposition , yposition, char.rect.x , char.rect.y)
+            #print(master[yposition][xposition-1])
                                 
 
                 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_w:
+                if event.key == pygame.K_w and (master[yposition-1][xposition]) != "w" and char.rect.y != xposition * 50:
                     y_speed = -5
-                if event.key == pygame.K_s and (master[yposition][xposition-1]) != "w":
+                if event.key == pygame.K_s and (master[yposition+1][xposition]) != "w" and char.rect.y != (xposition-1) * 50:
                     y_speed = 5
-                if event.key == pygame.K_a and (master[yposition][xposition-1]) != "w":
+                if event.key == pygame.K_a and (master[yposition][xposition-1]) != "w" and char.rect.x != yposition * 50:
                     x_speed = -5
-                if event.key == pygame.K_d:
+                if event.key == pygame.K_d and (master[yposition][xposition+1]) != "w" and char.rect.x != (yposition-1) * 50:
                     x_speed = 5
                     
             # Used to allow the character to shoot bullets
@@ -410,7 +411,6 @@ while not done:
 
                 if event.key == pygame.K_d:
                     x_speed = 0
-
         # --- Game logic should go here
         # Used to stop the character when hit the boundry of the windows
 
