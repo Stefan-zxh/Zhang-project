@@ -1,10 +1,12 @@
 
+
 import pygame
 import image
 
 # Define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+
 BLUE = (0,0,255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
@@ -13,11 +15,13 @@ y_speed = 0
 x_mob = 0
 y_mob = 0
 x_mob_speed = 5
+
 y_mob_speed = 5
 rect_x = 50
 rect_y = 50
 rect_change_x = 5
 rect_change_y = 5
+
 x1 = 0
 y1 = 0
 x2 = 200
@@ -82,6 +86,22 @@ class Wall(pygame.sprite.Sprite):
 
 Walls = pygame.sprite.Group()
 
+class halfheart(pygame.sprite.Sprite):
+    def __init__(self,x,y):
+        self.image = pygame,image.load("image/half heart.png").convert_alpha()
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.exsist = False
+        
+    def update(self):
+        if  self.exsist == False:
+            self.exsist == True
+            myhalfheart = halfheart(575,375)
+            all_sprites_list.add(myhelfheart)
+        if  pygame.sprite.spritecollide(item,char, True ,False):
+            self.kill
+            char.health = char,health + 1
 
     
 class Bullet_up(pygame.sprite.Sprite):
@@ -351,6 +371,7 @@ while not done:
                 mob2 = Mob2s(200,200)
                 Mob1.add(mob1)
                 Mob2.add(mob2)
+
                 Mobs.add(Mob1,Mob2)
                 with open("Level3.txt","r") as f:
                     for Y in range (0,16):
@@ -371,13 +392,13 @@ while not done:
 
                 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_w and (master[yposition-1][xposition]) != "w" and char.rect.y != xposition * 50:
+                if event.key == pygame.K_w and (master[yposition-1][xposition]) != "w":
                     y_speed = -5
-                if event.key == pygame.K_s and (master[yposition+1][xposition]) != "w" and char.rect.y != (xposition-1) * 50:
+                if event.key == pygame.K_s and (master[yposition+1][xposition]) != "w":
                     y_speed = 5
-                if event.key == pygame.K_a and (master[yposition][xposition-1]) != "w" and char.rect.x != yposition * 50:
+                if event.key == pygame.K_a and (master[yposition][xposition-1]) != "w":
                     x_speed = -5
-                if event.key == pygame.K_d and (master[yposition][xposition+1]) != "w" and char.rect.x != (yposition-1) * 50:
+                if event.key == pygame.K_d and (master[yposition][xposition+1]) != "w":
                     x_speed = 5
                     
             # Used to allow the character to shoot bullets
