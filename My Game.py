@@ -2,6 +2,7 @@
 
 import pygame
 import image
+import random
 
 # Define some colors
 BLACK = (0, 0, 0)
@@ -31,6 +32,7 @@ level_2 = False
 level_3 = False
 level = 0
 gameover = False
+itemexsist = False
 
 
 pygame.init()
@@ -56,13 +58,13 @@ class Character(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.xspeed = 5
+        self.yspeed = 5
         self.health = 10
         
     def update(self,y_speed,x_speed):
         self.rect.y += y_speed
         self.rect.x += x_speed
-        self.xspeed = x_speed
-        self.yspeed = y_speed
         if self.health <= 0:
             self.kill()
     def draw(self,win):
@@ -86,22 +88,28 @@ class Wall(pygame.sprite.Sprite):
 
 Walls = pygame.sprite.Group()
 
-class halfheart(pygame.sprite.Sprite):
-    def __init__(self,x,y):
-        self.image = pygame,image.load("image/half heart.png").convert_alpha()
+class powerup(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load("image/full heart.png").convert_alpha()
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.exsist = False
+        self.rect.x = 0
+        self.rect.y = 0
+        self.found = False
+
+    def create(self,master):
+        while self.found == False:
+            rand1 = random.randint(1,15)
+            rand2 = random.randint(1,23)
+            if master[rand1][rand2] =="0":
+                self.rect.y = rand1 * 50
+                self.rect.x = rand2 * 50
+                self.found = True
+                
+
+
+
         
-    def update(self):
-        if  self.exsist == False:
-            self.exsist == True
-            myhalfheart = halfheart(575,375)
-            all_sprites_list.add(myhelfheart)
-        if  pygame.sprite.spritecollide(item,char, True ,False):
-            self.kill
-            char.health = char,health + 1
 
     
 class Bullet_up(pygame.sprite.Sprite):
@@ -269,7 +277,7 @@ Mob2 = pygame.sprite.Group()
 Bullets = pygame.sprite.Group()
 myBullets = pygame.sprite.Group()
 mobBullets = pygame.sprite.Group()
-
+powerups = pygame.sprite.Group()
 
 
 all_sprites_list.add(char)
@@ -307,26 +315,20 @@ while not done:
                 Mob1.add(mob1)
                 Mob2.add(mob2)
                 Mobs.add(Mob1,Mob2)
-
                 master=[]
                 with open("Level1.txt","r") as f:
                     for Y in range (0,16):
                         a = f.readline()
                         mylist=[]
-                        
                         for X in range (0,24):
                             mylist.append(a[X])
-                            
                             if  a[X] == "w":
                                 myWall = Wall(X,Y)
                                 Walls.add(myWall)
-
-                                
                                 all_sprites_list.add(myWall)
                         master.append(mylist)
-
                 print(master)
-                                
+
             if len(Mobs) == 0 and level == 1:
                 for w in Walls:
                     w.kill()
@@ -388,18 +390,24 @@ while not done:
             yposition = char.rect.y // 50
             #print(xposition , yposition, char.rect.x , char.rect.y)
             #print(master[yposition][xposition-1])
-                                
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_t:
+                    mypowerup = powerup()
+                    mypowerup.create(master)
+                    powerups.add(mypowerup)
+                    all_sprites_list.add(mypowerup)
 
+                    
                 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w and (master[yposition-1][xposition]) != "w":
-                    y_speed = -5
+                    y_speed = -char.yspeed
                 if event.key == pygame.K_s and (master[yposition+1][xposition]) != "w":
-                    y_speed = 5
+                    y_speed = char.yspeed
                 if event.key == pygame.K_a and (master[yposition][xposition-1]) != "w":
-                    x_speed = -5
+                    x_speed = -char.xspeed
                 if event.key == pygame.K_d and (master[yposition][xposition+1]) != "w":
-                    x_speed = 5
+                    x_speed = char.xspeed
                     
             # Used to allow the character to shoot bullets
                 if event.key == pygame.K_UP:
@@ -464,7 +472,7 @@ while not done:
         if char.health <= 0:
             gameover = True
             
-
+        
         
         if pygame.sprite.spritecollideany(char, Walls ,False):
             if char.xspeed > 0 :
@@ -498,6 +506,7 @@ while not done:
         Mobs.draw(screen)
         all_sprites_list.add(Bullets)
         all_sprites_list.draw(screen)
+
         char.draw(screen)
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
