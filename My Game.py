@@ -16,12 +16,8 @@ y_speed = 0
 x_mob = 0
 y_mob = 0
 x_mob_speed = 5
-
 y_mob_speed = 5
-rect_x = 50
-rect_y = 50
-rect_change_x = 5
-rect_change_y = 5
+
 
 x1 = 0
 y1 = 0
@@ -33,10 +29,11 @@ level_3 = False
 level = 0
 gameover = False
 itemexsist = False
-
-
+itemtime = 0
+randitem = 0
+itemlevel = 0
 pygame.init()
-
+characterwall = True
 
 listofwalls=[[]]
 
@@ -388,15 +385,43 @@ while not done:
 
             xposition = char.rect.x // 50
             yposition = char.rect.y // 50
-            #print(xposition , yposition, char.rect.x , char.rect.y)
-            #print(master[yposition][xposition-1])
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_t:
-                    mypowerup = powerup()
-                    mypowerup.create(master)
-                    powerups.add(mypowerup)
-                    all_sprites_list.add(mypowerup)
 
+
+
+            if itemtime == 120:
+                mypowerup = powerup()
+                mypowerup.create(master)
+                powerups.add(mypowerup)
+                all_sprites_list.add(mypowerup)
+                itemtime = 0
+            else:
+                itemtime = itemtime + 1
+
+            if pygame.sprite.spritecollide(char,powerups, True):
+                randitem = random.randint(0,5)
+                itemlevel = random.randint(1,3)
+                if randitem == 0:
+                    
+                    if itemlevel == 1:
+                        char.xspeed = 6
+                        char.yspeed = 6
+                    if itemlevel == 2:
+                        char.xspeed = 7
+                        char.yspeed = 7
+                    if itemlevel == 3:
+                        char.xspeed = 8
+                        char.yspeed = 8
+                if randitem == 1:
+                    if itemlevel == 1:
+                        char.health = char.health + 1
+                    if itemlevel == 2:
+                        char.health = char.health + 2
+                    if itemlevel == 3 :
+                        char.health = char.health + 3
+                if randitem == 2:
+                    characterwall = False
+                mypowerup.kill()
+                
                     
                 
             if event.type == pygame.KEYDOWN:
@@ -409,6 +434,8 @@ while not done:
                 if event.key == pygame.K_d and (master[yposition][xposition+1]) != "w":
                     x_speed = char.xspeed
                     
+
+
             # Used to allow the character to shoot bullets
                 if event.key == pygame.K_UP:
                     mybulletup = Bullet_up(char.rect.x + 40, char.rect.y)
@@ -473,16 +500,16 @@ while not done:
             gameover = True
             
         
-        
-        if pygame.sprite.spritecollideany(char, Walls ,False):
-            if char.xspeed > 0 :
-                char.rect.x = char.rect.x - 5
-            elif char.xspeed < 0 :
-                char.rect.x = char.rect.x + 5
-            if char.yspeed > 0 :
-                char.rect.y = char.rect.y - 5
-            elif char.yspeed < 0 :
-                char.rect.y = char.rect.y + 5        
+        if characterwall == True:
+            if pygame.sprite.spritecollideany(char, Walls ,False):
+                if char.xspeed > 0 :
+                    char.rect.x = char.rect.x - char.xspeed
+                elif char.xspeed < 0 :
+                    char.rect.x = char.rect.x + char.xspeed
+                if char.yspeed > 0 :
+                    char.rect.y = char.rect.y - char.yspeed
+                elif char.yspeed < 0 :
+                    char.rect.y = char.rect.y + char.yspeed
         
             
         if pygame.sprite.spritecollide(char, mobBullets, True):
