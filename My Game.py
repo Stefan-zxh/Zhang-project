@@ -461,10 +461,8 @@ while not done:
                     y_speed = 0
                 if event.key == pygame.K_s:
                     y_speed = 0
-
                 if event.key == pygame.K_a:
                     x_speed = 0
-
                 if event.key == pygame.K_d:
                     x_speed = 0
         # --- Game logic should go here
@@ -503,13 +501,13 @@ while not done:
         if characterwall == True:
             if pygame.sprite.spritecollideany(char, Walls ,False):
                 if char.xspeed > 0 :
-                    char.rect.x = char.rect.x - char.xspeed
-                elif char.xspeed < 0 :
-                    char.rect.x = char.rect.x + char.xspeed
+                    char.rect.x = char.rect.x - x_speed
+                if char.xspeed < 0 :
+                    char.rect.x = char.rect.x + x_speed
                 if char.yspeed > 0 :
-                    char.rect.y = char.rect.y - char.yspeed
-                elif char.yspeed < 0 :
-                    char.rect.y = char.rect.y + char.yspeed
+                    char.rect.y = char.rect.y - y_speed
+                if char.yspeed < 0 :
+                    char.rect.y = char.rect.y + y_speed
         
             
         if pygame.sprite.spritecollide(char, mobBullets, True):
