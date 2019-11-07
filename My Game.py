@@ -13,16 +13,6 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 x_speed = 0
 y_speed = 0
-x_mob = 0
-y_mob = 0
-x_mob_speed = 5
-y_mob_speed = 5
-
-
-x1 = 0
-y1 = 0
-x2 = 200
-y2 = 200
 level_1 = True
 level_2 = False
 level_3 = False
@@ -34,13 +24,15 @@ randitem = 0
 itemlevel = 0
 pygame.init()
 characterwall = True
-
+notmoveable = True
+invincible = False
+invincibletime = 0
+walltime = 0
 listofwalls=[[]]
 
 
 
 
-# Set the width and height of the screen [width, height]
 
 screen = pygame.display.set_mode((1200,800))
 pygame.display.set_caption("My Game")
@@ -60,8 +52,10 @@ class Character(pygame.sprite.Sprite):
         self.health = 10
         
     def update(self,y_speed,x_speed):
-        self.rect.y += y_speed
-        self.rect.x += x_speed
+        self.rect.y += self.yspeed
+        self.rect.x += self.xspeed
+        self.yspeed = y_speed
+        self.xspeed = x_speed
         if self.health <= 0:
             self.kill()
     def draw(self,win):
@@ -93,7 +87,6 @@ class powerup(pygame.sprite.Sprite):
         self.rect.x = 0
         self.rect.y = 0
         self.found = False
-
     def create(self,master):
         while self.found == False:
             rand1 = random.randint(1,15)
@@ -101,13 +94,7 @@ class powerup(pygame.sprite.Sprite):
             if master[rand1][rand2] =="0":
                 self.rect.y = rand1 * 50
                 self.rect.x = rand2 * 50
-                self.found = True
-                
-
-
-
-        
-
+                self.found = True      
     
 class Bullet_up(pygame.sprite.Sprite):
  
@@ -117,54 +104,49 @@ class Bullet_up(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.damage = 1
         
     def update(self):
         self.rect.y -= 10
 
 class Bullet_down(pygame.sprite.Sprite):
-    """ This class represents a simple block the player collects. """
  
     def __init__(self,x,y):
-        """ Constructor, create the image of the block. """
         super().__init__()
         self.image = pygame.image.load("image/tear.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.damage = 1
  
     def update(self):
-        """ Automatically called when we need to move the block. """
+
         self.rect.y += 10
 
 class Bullet_left(pygame.sprite.Sprite):
-    """ This class represents a simple block the player collects. """
  
     def __init__(self,x,y):
-        """ Constructor, create the image of the block. """
         super().__init__()
         self.image = pygame.image.load("image/tear.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.damage = 1
  
     def update(self):
-        """ Automatically called when we need to move the block. """
         self.rect.x -= 10
       
 class Bullet_right(pygame.sprite.Sprite):
-    """ This class represents a simple block the player collects. """
  
     def __init__(self,x,y):
-        """ Constructor, create the image of the block. """
         super().__init__()
         self.image = pygame.image.load("image/tear.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        
+        self.damage = 1
      
     def update(self):
-        """ Automatically called when we need to move the block. """
         self.rect.x += 10
             
 class Mob1s(pygame.sprite.Sprite):
@@ -179,9 +161,6 @@ class Mob1s(pygame.sprite.Sprite):
         self.health = 3
         self.xdirection = ''
         self.ydirection = ''
-
-        
-#this is the method for the enermy to be able to move towards the character
     def update(self,x_character, y_character):
         if self.health > 0:
             if x_character - self.rect.x > 0:
@@ -198,8 +177,7 @@ class Mob1s(pygame.sprite.Sprite):
                 self.ydirection = "up"
         if self.health <= 0:
             self.kill()
-
-
+            
             
 class Mob2s(pygame.sprite.Sprite):
     def __init__(self,x,y):
@@ -215,7 +193,6 @@ class Mob2s(pygame.sprite.Sprite):
         self.xdirection = ''
         self.ydirection = ''
     def update(self,x_character, y_character):
-        
         if self.health > 0:   
             if  x_character - self.rect.x > 200:
                 self.rect.x += self.xspeed
@@ -324,7 +301,6 @@ while not done:
                                 Walls.add(myWall)
                                 all_sprites_list.add(myWall)
                         master.append(mylist)
-                print(master)
 
             if len(Mobs) == 0 and level == 1:
                 for w in Walls:
@@ -383,8 +359,8 @@ while not done:
 
 
 
-            xposition = char.rect.x // 50
-            yposition = char.rect.y // 50
+            xposition = (char.rect.x + 25) // 50
+            yposition = (char.rect.y + 12)// 50
 
 
 
@@ -401,7 +377,6 @@ while not done:
                 randitem = random.randint(0,5)
                 itemlevel = random.randint(1,3)
                 if randitem == 0:
-                    
                     if itemlevel == 1:
                         char.xspeed = 6
                         char.yspeed = 6
@@ -420,22 +395,66 @@ while not done:
                         char.health = char.health + 3
                 if randitem == 2:
                     characterwall = False
+                    if itemlevel == 1:
+                        walltime = 300
+                    if itemlevel == 2:
+                        walltime = 600
+                    if itemlevel == 3:
+                        walltime = 900
+                if randitem == 3:
+                    invincible = True
+                    if itemlevel == 1:
+                        invincibletime = 300
+                    if itemlevel == 2:
+                        invincibletime = 600
+                    if itemlevel == 3:
+                        invincibletime = 900
+                if randitem == 4:
+                    for b in myBullets:
+                        if itemlevel == 1 or itemlevel == 2:
+                            b.damage = 2
+                        if itemlevel == 3:
+                            b.damage = 3
                 mypowerup.kill()
                 
                     
                 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_w and (master[yposition-1][xposition]) != "w":
-                    y_speed = -char.yspeed
-                if event.key == pygame.K_s and (master[yposition+1][xposition]) != "w":
-                    y_speed = char.yspeed
-                if event.key == pygame.K_a and (master[yposition][xposition-1]) != "w":
-                    x_speed = -char.xspeed
-                if event.key == pygame.K_d and (master[yposition][xposition+1]) != "w":
-                    x_speed = char.xspeed
-                    
+                if event.key == pygame.K_w:
+                    if char.rect.x//50 == xposition and (master[yposition-1][xposition]) != "w" and char.rect.x == xposition * 50:
+                        y_speed = -5
+                    if char.rect.x//50 < xposition and (master[yposition-1][xposition]) != "w" and (master[yposition-1][xposition-1]) != "w":
+                        y_speed = -5
+                    if char.rect.x > xposition * 50 and (master[yposition-1][xposition]) != "w" and (master[yposition-1][xposition+1]) != "w":
+                        y_speed = -5
+ 
+                if event.key == pygame.K_s:
+                    if char.rect.x//50 == xposition and (master[yposition+1][xposition]) != "w" and char.rect.x == xposition * 50:
+                        y_speed = 5
+                    if char.rect.x//50 < xposition and (master[yposition+1][xposition]) != "w" and (master[yposition+1][xposition-1]) != "w":
+                        y_speed = 5
+                    if char.rect.x > xposition * 50 and (master[yposition+1][xposition]) != "w" and (master[yposition+1][xposition+1]) != "w":
+                        y_speed = 5
+                
+                if event.key == pygame.K_a:
+                    if char.rect.y//50 == yposition and (master[yposition][xposition-1]) != "w" and char.rect.y == yposition * 50:
+                        x_speed = -5
+                    if char.rect.y//50 < yposition and (master[yposition][xposition-1]) != "w" and (master[yposition+1][xposition-1]) != "w":
+                        x_speed = -5
+                    if char.rect.y > yposition * 50 and (master[yposition][xposition-1]) != "w" and (master[yposition-1][xposition-1]) != "w":
+                        x_speed = -5
+                        
+                if event.key == pygame.K_d:
+                    if char.rect.y//50 == yposition and (master[yposition][xposition+1]) != "w" and char.rect.y == yposition * 50:
+                        x_speed = 5
+                    if char.rect.y//50 < yposition and (master[yposition][xposition+1]) != "w" and (master[yposition+1][xposition+1]) != "w":
+                        x_speed = 5
+                    if char.rect.y > yposition * 50 and (master[yposition][xposition+1]) != "w" and (master[yposition-1][xposition+1]) != "w":
+                        x_speed = 5
 
 
+
+                        
             # Used to allow the character to shoot bullets
                 if event.key == pygame.K_UP:
                     mybulletup = Bullet_up(char.rect.x + 40, char.rect.y)
@@ -470,7 +489,7 @@ while not done:
 
         xposition = char.rect.x // 50 + 1
         yposition = char.rect.y // 50 + 1
-        #print(master[yposition][xposition-1])
+        
                    
         pygame.sprite.groupcollide(Bullets, Walls, True ,False)
 
@@ -501,17 +520,34 @@ while not done:
         if characterwall == True:
             if pygame.sprite.spritecollideany(char, Walls ,False):
                 if char.xspeed > 0 :
-                    char.rect.x = char.rect.x - x_speed
+                    x_speed = 0
                 if char.xspeed < 0 :
-                    char.rect.x = char.rect.x + x_speed
+                    x_speed = 0
                 if char.yspeed > 0 :
-                    char.rect.y = char.rect.y - y_speed
+                    y_speed = 0
                 if char.yspeed < 0 :
-                    char.rect.y = char.rect.y + y_speed
-        
+                    y_speed  = 0
+
+                    
+        if pygame.sprite.spritecollideany(char, Mobs ,False) and invincible == False:
+            char.health = char.health - 1
+            invincible = True
+            invincibletime = 50
+
+        if invincible == True:
+            invincibletime = invincibletime - 1
+            if invincibletime == 0:
+                invincible = False
+                
+        if characterwall == False:
+            walltime = walltime - 1
+            if walltime == 0:
+                characterwall = False
             
-        if pygame.sprite.spritecollide(char, mobBullets, True):
+        if pygame.sprite.spritecollide(char, mobBullets, True) and invincible == False:
             char.health = char.health -1
+            invincible = True
+            invincibletime = 50
 
 
         # --- Screen-clearing code goes here
