@@ -1,5 +1,4 @@
 
-
 import pygame
 import image
 import random
@@ -29,10 +28,9 @@ invincible = False
 invincibletime = 0
 walltime = 0
 listofwalls=[[]]
-
-
-
-
+LOST = False
+WIN = False
+itemkill = 0
 
 screen = pygame.display.set_mode((1200,800))
 pygame.display.set_caption("My Game")
@@ -95,11 +93,11 @@ class powerup(pygame.sprite.Sprite):
                 self.rect.y = rand1 * 50
                 self.rect.x = rand2 * 50
                 self.found = True      
-    
+
 class Bullet_up(pygame.sprite.Sprite):
  
     def __init__(self,x,y):
-        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load("image/tear.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -112,7 +110,7 @@ class Bullet_up(pygame.sprite.Sprite):
 class Bullet_down(pygame.sprite.Sprite):
  
     def __init__(self,x,y):
-        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load("image/tear.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -126,7 +124,7 @@ class Bullet_down(pygame.sprite.Sprite):
 class Bullet_left(pygame.sprite.Sprite):
  
     def __init__(self,x,y):
-        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load("image/tear.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -139,7 +137,7 @@ class Bullet_left(pygame.sprite.Sprite):
 class Bullet_right(pygame.sprite.Sprite):
  
     def __init__(self,x,y):
-        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load("image/tear.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -256,7 +254,8 @@ powerups = pygame.sprite.Group()
 
 all_sprites_list.add(char)
 font = pygame.font.SysFont("comicsansms", 72)
-text = font.render("Game Over!", True, BLUE)
+lose = font.render("YOU LOSE!", True, BLUE)
+win = font.render("YOU WIN!", True, BLUE)
 health = char.health
 
     
@@ -268,12 +267,18 @@ clock = pygame.time.Clock()
 
 while not done:
     # --- Main event loop
-    if gameover == True:
+    if LOST == True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
         screen.fill(RED)
-        screen.blit(text,(600 - text.get_width() // 2, 400 - text.get_height() // 2))
+        screen.blit(lose,(600 - lose.get_width() // 2, 400 - lose.get_height() // 2))
+    elif WIN == True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
+        screen.fill(RED)
+        screen.blit(win,(600 - win.get_width() // 2, 400 - win.get_height() // 2))
     elif gameover == False:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -356,23 +361,31 @@ while not done:
                                 myWall = Wall(X,Y)
                                 Walls.add(myWall)
                                 all_sprites_list.add(myWall)
-
-
+            if len(Mobs) == 0 and level == 3:
+                WIN = True
 
             xposition = (char.rect.x + 25) // 50
             yposition = (char.rect.y + 12)// 50
 
 
 
-            if itemtime == 120:
+            if itemtime ==120:
                 mypowerup = powerup()
                 mypowerup.create(master)
                 powerups.add(mypowerup)
                 all_sprites_list.add(mypowerup)
-                itemtime = 0
-            else:
+                itemkill = itemkill + 1
+                itemtime = itemtime + 1
+            elif itemtime < 120:
                 itemtime = itemtime + 1
 
+            if itemtime == 121:
+                itemkill = itemkill + 1
+            if itemkill == 90:
+                mypowerup.kill()
+                itemtime = 0
+                itemkill = 0
+            print(itemtime, itemkill)    
             if pygame.sprite.spritecollide(char,powerups, True):
                 randitem = random.randint(0,5)
                 itemlevel = random.randint(1,3)
@@ -416,6 +429,7 @@ while not done:
                         if itemlevel == 3:
                             b.damage = 3
                 mypowerup.kill()
+                itemtime = 0
                 
                     
                 
@@ -503,7 +517,6 @@ while not done:
                         elif c.xdirection == "right":
                             c.rect.x = c.rect.x - 2
                         if c.ydirection == "up":
-
                             c.rect.y = c.rect.y + 2
                         elif c.ydirection == "down":
                             c.rect.y = c.rect.y - 2
@@ -514,7 +527,7 @@ while not done:
                 m.health = m.health - 1
                         
         if char.health <= 0:
-            gameover = True
+            LOST = True
             
         
         if characterwall == True:
