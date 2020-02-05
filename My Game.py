@@ -148,17 +148,18 @@ class Bullet_right(pygame.sprite.Sprite):
         self.rect.x += 10
             
 class Mob1s(pygame.sprite.Sprite):
-    def __init__(self,x,y,):
+    def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load("image/031.00.00.png").convert_alpha()
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        self.rect.x = 0
+        self.rect.y = 0
         self.xspeed = 2
         self.yspeed = 2
         self.health = 3
         self.xdirection = ''
         self.ydirection = ''
+        self.found = False
     def update(self,x_character, y_character):
         if self.health > 0:
             if x_character - self.rect.x > 0:
@@ -176,20 +177,29 @@ class Mob1s(pygame.sprite.Sprite):
         if self.health <= 0:
             self.kill()
             
+    def create(self,master):
+        while self.found == False:
+            rand1 = random.randint(1,15)
+            rand2 = random.randint(1,23)
+            if master[rand1][rand2] =="0":
+                self.rect.y = rand1 * 50
+                self.rect.x = rand2 * 50
+                self.found = True          
             
 class Mob2s(pygame.sprite.Sprite):
-    def __init__(self,x,y):
+    def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load("image/010.01.00.png").convert_alpha()
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        self.rect.x = 0
+        self.rect.y = 0
         self.xspeed = 2
         self.yspeed = 2
         self.timeCount = 0
         self.health = 2
         self.xdirection = ''
         self.ydirection = ''
+        self.found = False
     def update(self,x_character, y_character):
         if self.health > 0:   
             if  x_character - self.rect.x > 200:
@@ -240,7 +250,15 @@ class Mob2s(pygame.sprite.Sprite):
                 
         if self.health <= 0:
             self.kill()
-                      
+            
+    def create(self,master):
+        while self.found == False:
+            rand1 = random.randint(1,15)
+            rand2 = random.randint(1,23)
+            if master[rand1][rand2] =="0":
+                self.rect.y = rand1 * 50
+                self.rect.x = rand2 * 50
+                self.found = True                        
 
 #here we can add mobs into groups
 Mobs = pygame.sprite.Group()
@@ -289,12 +307,16 @@ while not done:
             if level_1 == True:
                 level_1 = False
                 level = level + 1
-                mob1 = Mob1s(50,50)
-                mob2 = Mob2s(200,200)
+                master=[]
+                mob1 = Mob1s()
+                mob1.rect.x = 100
+                mob1.rect.y = 100
+                mob2 = Mob2s()
+                mob2.rect.x = 500
+                mob2.rect.y = 500
                 Mob1.add(mob1)
                 Mob2.add(mob2)
                 Mobs.add(Mob1,Mob2)
-                master=[]
                 with open("Level1.txt","r") as f:
                     for Y in range (0,16):
                         a = f.readline()
@@ -311,7 +333,7 @@ while not done:
                 for w in Walls:
                     w.kill()
                 char.kill()
-                char = Character(500,500)
+                char = Character(700,700)
                 all_sprites_list.add(char)
                 char.health = health
                 level_2 = True
@@ -320,8 +342,10 @@ while not done:
             if level_2 == True:
                 level_2 = False
                 level = level + 1
-                mob1 = Mob1s(50,50)
-                mob2 = Mob2s(200,200)
+                mob1 = Mob1s()
+                mob1.create(master)
+                mob2 = Mob2s()
+                mob2.create(master)
                 Mob1.add(mob1)
                 Mob2.add(mob2)
                 Mobs.add(Mob1,Mob2)
@@ -347,8 +371,10 @@ while not done:
             if level_3 == True :
                 level_3 = False
                 level = level + 1
-                mob1 = Mob1s(50,50)
-                mob2 = Mob2s(200,200)
+                mob1 = Mob1s()
+                mob1.create(master)
+                mob2 = Mob2s()
+                mob2.create(master)
                 Mob1.add(mob1)
                 Mob2.add(mob2)
 
@@ -385,7 +411,7 @@ while not done:
                 mypowerup.kill()
                 itemtime = 0
                 itemkill = 0
-            print(itemtime, itemkill)    
+   
             if pygame.sprite.spritecollide(char,powerups, True):
                 randitem = random.randint(0,5)
                 itemlevel = random.randint(1,3)
