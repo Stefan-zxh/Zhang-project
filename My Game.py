@@ -311,9 +311,11 @@ while not done:
                 mob1 = Mob1s()
                 mob1.rect.x = 100
                 mob1.rect.y = 100
+                mob1.health = 4
                 mob2 = Mob2s()
-                mob2.rect.x = 500
-                mob2.rect.y = 500
+                mob2.rect.x = 700
+                mob2.rect.y = 700
+                mob2.health = 3
                 Mob1.add(mob1)
                 Mob2.add(mob2)
                 Mobs.add(Mob1,Mob2)
@@ -333,7 +335,7 @@ while not done:
                 for w in Walls:
                     w.kill()
                 char.kill()
-                char = Character(700,700)
+                char = Character(500,500)
                 all_sprites_list.add(char)
                 char.health = health
                 level_2 = True
@@ -344,8 +346,10 @@ while not done:
                 level = level + 1
                 mob1 = Mob1s()
                 mob1.create(master)
+                mob1.health = 6
                 mob2 = Mob2s()
                 mob2.create(master)
+                mob2.health = 4
                 Mob1.add(mob1)
                 Mob2.add(mob2)
                 Mobs.add(Mob1,Mob2)
@@ -373,8 +377,10 @@ while not done:
                 level = level + 1
                 mob1 = Mob1s()
                 mob1.create(master)
+                mob1.health = 8
                 mob2 = Mob2s()
                 mob2.create(master)
+                mob2.health = 7
                 Mob1.add(mob1)
                 Mob2.add(mob2)
 
